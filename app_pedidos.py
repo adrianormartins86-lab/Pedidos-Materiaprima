@@ -439,8 +439,7 @@ def carregar_catalogo_materia():
     except ValueError as e:
         if "Spreadsheet must be specified" in str(e):
             st.error("🚨 **Erro Crítico:** URL da Planilha não especificada nas configurações do Streamlit Cloud (Secrets).")
-            st.info("No painel do Streamlit, vá em **App settings > Secrets** e adicione o bloco:\n\n```toml\n[connections.gsheets]\nspreadsheet = \"https://docs.google.com/spreadsheets/d/1wkNQZOqaTBZPla2VfMXj9Kj5o_GdCw8JluPxWLHAanY/edit?gid=1837316298#gid=1837316298"\n
-```")
+            st.info("No painel do Streamlit, vá em **App settings > Secrets** e adicione o bloco:\n\n```toml\n[connections.gsheets]\nspreadsheet = \"https://docs.google.com/spreadsheets/d/1wkNQZOqaTBZPla2VfMXj9Kj5o_GdCw8JluPxWLHAanY/edit?gid=1837316298#gid=1837316298"\n```")
             st.stop()
         else:
             raise e
