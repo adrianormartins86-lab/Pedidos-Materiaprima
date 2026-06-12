@@ -24,7 +24,7 @@ if 'usuario_logado_materia_prima' not in st.session_state:
     st.session_state['usuario_logado_materia_prima'] = None
 
 # ─────────────────────────────────────────────
-# CSS GLOBAL E DE IMPRESSÃO (PALETA VERMELHA)
+# CSS GLOBAL E DE IMPRESSÃO (PALETA MARROM CLARO / CARAMELO)
 # ─────────────────────────────────────────────
 st.markdown("""
 <style>
@@ -34,18 +34,18 @@ st.markdown("""
     --bg-main:        #0d1117;
     --bg-card:        #161b22;
     --bg-sidebar:     #0d1117;
-    --red-dark:       #3a1010;
-    --red-mid:        #6b1d1d;
-    --red-accent:     #b32d2d;
-    --red-bright:     #e63939;
-    --red-glow:       rgba(179, 45, 45, .25);
+    --brown-dark:     #3a2610; /* Fundo escuro sutil para headers */
+    --brown-mid:      #8b5a2b; /* Tom médio para botões e gradientes */
+    --brown-accent:   #cd853f; /* Tom caramelo claro para destaque principal */
+    --brown-bright:   #eebb88; /* Bege/Caramelo super claro para textos fortes */
+    --brown-glow:     rgba(205, 133, 63, .25);
     --text-primary:   #e6edf3;
     --text-muted:     #7d8590;
-    --text-header:    #ffcccc;
+    --text-header:    #f5deb3; /* Trigo/Bege para títulos */
     --border:         #21262d;
-    --border-active:  #b32d2d;
-    --row-hover:      rgba(179, 45, 45, .08);
-    --row-selected:   rgba(179, 45, 45, .18);
+    --border-active:  #cd853f;
+    --row-hover:      rgba(205, 133, 63, .08);
+    --row-selected:   rgba(205, 133, 63, .18);
 }
 
 .stApp, .main { background-color: var(--bg-main) !important; color: var(--text-primary) !important; }
@@ -55,9 +55,9 @@ section[data-testid="stSidebar"] * { color: var(--text-primary) !important; }
 section[data-testid="stSidebar"] .stRadio label { font-size: 14px; }
 
 .stButton > button[kind="primary"] {
-    background: linear-gradient(135deg, var(--red-mid) 0%, var(--red-accent) 100%) !important;
+    background: linear-gradient(135deg, var(--brown-mid) 0%, var(--brown-accent) 100%) !important;
     color: #fff !important;
-    border: 1px solid var(--red-accent) !important;
+    border: 1px solid var(--brown-accent) !important;
     border-radius: 8px !important;
     font-weight: 700 !important;
     letter-spacing: .3px;
@@ -65,7 +65,7 @@ section[data-testid="stSidebar"] .stRadio label { font-size: 14px; }
 }
 .stButton > button[kind="primary"]:hover {
     transform: translateY(-2px) !important;
-    box-shadow: 0 4px 18px var(--red-glow) !important;
+    box-shadow: 0 4px 18px var(--brown-glow) !important;
 }
 .stButton > button {
     background: var(--bg-card) !important;
@@ -75,8 +75,8 @@ section[data-testid="stSidebar"] .stRadio label { font-size: 14px; }
     transition: all .2s ease !important;
 }
 .stButton > button:hover {
-    border-color: var(--red-accent) !important;
-    color: var(--red-bright) !important;
+    border-color: var(--brown-accent) !important;
+    color: var(--brown-bright) !important;
     transform: translateY(-1px) !important;
 }
 .stTextInput input, .stSelectbox > div > div {
@@ -86,29 +86,29 @@ section[data-testid="stSidebar"] .stRadio label { font-size: 14px; }
     color: var(--text-primary) !important;
 }
 .stTextInput input:focus, .stSelectbox > div > div:focus-within {
-    border-color: var(--red-accent) !important;
-    box-shadow: 0 0 0 3px var(--red-glow) !important;
+    border-color: var(--brown-accent) !important;
+    box-shadow: 0 0 0 3px var(--brown-glow) !important;
 }
 .title-input input {
     font-weight: 700 !important;
     font-size: 16px !important;
-    color: var(--red-bright) !important;
+    color: var(--brown-bright) !important;
     padding: 2px 8px !important;
     background: transparent !important;
     border: 1px dashed #21262d !important;
 }
-.title-input input:focus { border: 1px dashed var(--red-accent) !important; }
+.title-input input:focus { border: 1px dashed var(--brown-accent) !important; }
 
 [data-testid="stDataEditor"] [data-testid="glideDataEditor"] .gdg-header-cell,
 [data-testid="stDataEditor"] .dvn-stack .gdg-header {
-    background-color: var(--red-dark) !important;
+    background-color: var(--brown-dark) !important;
     color: var(--text-header) !important;
 }
 
 [data-testid="stDataEditor"] {
     border-radius: 10px !important;
     overflow: hidden;
-    border: 1px solid var(--red-mid) !important;
+    border: 1px solid var(--brown-mid) !important;
     box-shadow: 0 4px 20px rgba(0,0,0,.4);
     font-size: 12px !important;
 }
@@ -116,7 +116,7 @@ section[data-testid="stSidebar"] .stRadio label { font-size: 14px; }
 [data-testid="stDataEditor"] .gdg-cell[data-state="focused"],
 [data-testid="stDataEditor"] .gdg-cell[aria-selected="true"] {
     background-color: var(--row-selected) !important;
-    outline: 2px solid var(--red-accent) !important;
+    outline: 2px solid var(--brown-accent) !important;
     outline-offset: -2px;
 }
 [data-testid="stDataEditor"] .gdg-row:hover .gdg-cell { background-color: var(--row-hover) !important; }
@@ -128,7 +128,7 @@ div[data-testid="stVerticalBlockBorderWrapper"] {
     transition: box-shadow .25s ease, border-color .25s ease;
 }
 div[data-testid="stVerticalBlockBorderWrapper"]:hover {
-    border-color: var(--red-mid) !important;
+    border-color: var(--brown-mid) !important;
     box-shadow: 0 6px 24px rgba(0,0,0,.35) !important;
 }
 [data-testid="stMetric"] {
@@ -137,12 +137,12 @@ div[data-testid="stVerticalBlockBorderWrapper"]:hover {
     border-radius: 10px;
     padding: 10px 10px;
 }
-[data-testid="stMetricValue"] { color: var(--red-bright) !important; font-weight: 700; font-size: 1.8rem !important; }
+[data-testid="stMetricValue"] { color: var(--brown-bright) !important; font-weight: 700; font-size: 1.8rem !important; }
 [data-testid="stMetricLabel"] { color: var(--text-muted) !important; }
 
 .topbar-loja {
-    background: linear-gradient(90deg, var(--red-dark) 0%, #1a0808 100%);
-    border: 1px solid var(--red-mid);
+    background: linear-gradient(90deg, var(--brown-dark) 0%, #1c140d 100%);
+    border: 1px solid var(--brown-mid);
     border-radius: 10px;
     padding: 10px 18px;
     margin-bottom: 18px;
@@ -282,7 +282,7 @@ produtos_iniciais = [
     {"Fornecedor": "MATÉRIA PRIMA GERAL", "Código": 34067, "Descrição Oficial": "Arroz 5kg Frias Extra Tp1", "Nome Personalizado": ""},
     {"Fornecedor": "MATÉRIA PRIMA GERAL", "Código": 558057, "Descrição Oficial": "Atum Ralado 140g Pescador Oleo", "Nome Personalizado": ""},
     {"Fornecedor": "MATÉRIA PRIMA GERAL", "Código": 558048, "Descrição Oficial": "Atum Solido 140g Pescador Oleo", "Nome Personalizado": ""},
-    {"Fornecedor": "MATÉRIA PRIMA GERAL", "Código": 188593, "Descrição Oficial": "Azeit Verde Fatiada 1,010kg Atalaia Sache", "Nome Personalizado": ""},
+    {"Fornecedor": "MATÉRIA PRIMA GERAL", "Código": 188593, "Descrição Oficial": "Azeite Verde Fatiada 1,010kg Atalaia Sache", "Nome Personalizado": ""},
     {"Fornecedor": "MATÉRIA PRIMA GERAL", "Código": 144216, "Descrição Oficial": "Azeite Oliva 500ml Borges Ex Virgem", "Nome Personalizado": ""},
     {"Fornecedor": "MATÉRIA PRIMA GERAL", "Código": 451967, "Descrição Oficial": "Batata Palha 1kg Vo Maria", "Nome Personalizado": ""},
     {"Fornecedor": "MATÉRIA PRIMA GERAL", "Código": 651390, "Descrição Oficial": "Bisc Maizena 300g Marilan", "Nome Personalizado": ""},
@@ -439,7 +439,8 @@ def carregar_catalogo_materia():
     except ValueError as e:
         if "Spreadsheet must be specified" in str(e):
             st.error("🚨 **Erro Crítico:** URL da Planilha não especificada nas configurações do Streamlit Cloud (Secrets).")
-            st.info("No painel do Streamlit, vá em **App settings > Secrets** e adicione o bloco:\n\n```toml\n[connections.gsheets]\nspreadsheet = \"URL_DA_SUA_PLANILHA\"\n```")
+            st.info("No painel do Streamlit, vá em **App settings > Secrets** e adicione o bloco:\n\n```toml\n[connections.gsheets]\nspreadsheet = \"URL_DA_SUA_PLANILHA\"\n
+```")
             st.stop()
         else:
             raise e
@@ -672,7 +673,7 @@ def modal_zerar_pedidos():
 # ─────────────────────────────────────────────
 if perfil_navegacao == "Separação e Fechamento":
     st.markdown("""
-    <div class="page-header hide-print" style="background: linear-gradient(90deg, var(--red-dark) 0%, #1a0808 100%); padding: 14px 20px; border-radius: 10px; margin-bottom: 22px;">
+    <div class="page-header hide-print" style="background: linear-gradient(90deg, var(--brown-dark) 0%, #1c140d 100%); padding: 14px 20px; border-radius: 10px; margin-bottom: 22px;">
         <span style="font-size: 26px; margin-right: 12px;">📊</span>
         <div style="display: inline-block; vertical-align: top;">
             <div style="font-size: 20px; font-weight: 700; color: var(--text-header);">Separação e Fechamento — Matéria Prima</div>
@@ -931,7 +932,7 @@ elif perfil_navegacao == "Visão das Lojas":
 # ─────────────────────────────────────────────
 elif perfil_navegacao == "Visão por Fornecedor (Resumo)":
     st.markdown("""
-    <div class="hide-print" style="background: linear-gradient(90deg, var(--red-dark) 0%, #1a0808 100%); padding: 14px 20px; border-radius: 10px; margin-bottom: 22px;">
+    <div class="hide-print" style="background: linear-gradient(90deg, var(--brown-dark) 0%, #1c140d 100%); padding: 14px 20px; border-radius: 10px; margin-bottom: 22px;">
         <span style="font-size: 26px; margin-right: 12px;">📦</span>
         <div style="display: inline-block; vertical-align: top;">
             <div style="font-size: 20px; font-weight: 700; color: var(--text-header);">Visão por Categoria — Matéria Prima</div>
@@ -999,7 +1000,7 @@ elif perfil_navegacao == "Visão por Fornecedor (Resumo)":
 
                     total_geral = int(df_forn_edit["TOTAL"].sum()) if "TOTAL" in df_forn_edit.columns else 0
                     st.markdown(f"""
-                        <div style="text-align:right; font-weight:700; margin-top:6px; color:var(--red-bright); font-size:15px;">
+                        <div style="text-align:right; font-weight:700; margin-top:6px; color:var(--brown-bright); font-size:15px;">
                             Total Geral: {total_geral} unidades
                         </div>
                     """, unsafe_allow_html=True)
@@ -1051,7 +1052,7 @@ elif perfil_navegacao == "Visão por Fornecedor (Resumo)":
 # ─────────────────────────────────────────────
 elif perfil_navegacao == "Catálogo de Produtos":
     st.markdown("""
-    <div class="page-header hide-print" style="background: linear-gradient(90deg, var(--red-dark) 0%, #1a0808 100%); padding: 14px 20px; border-radius: 10px; margin-bottom: 22px;">
+    <div class="page-header hide-print" style="background: linear-gradient(90deg, var(--brown-dark) 0%, #1c140d 100%); padding: 14px 20px; border-radius: 10px; margin-bottom: 22px;">
         <span style="font-size: 26px; margin-right: 12px;">🗂️</span>
         <div style="display: inline-block; vertical-align: top;">
             <div style="font-size: 20px; font-weight: 700; color: var(--text-header);">Catálogo de Matéria Prima</div>
