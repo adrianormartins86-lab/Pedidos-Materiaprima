@@ -894,17 +894,13 @@ elif perfil_navegacao == "Visão das Lojas":
         cod_empresa_banco = mapa_banco_erp.get(loja_selecionada, "001")
 
         query_erp = f"""
-            SELECT cadprodemp.cade_codempresa,
-                   cadprodemp.cade_codigo,
-                   cadprod.cadp_descricao,
-                   cadprodemp.cade_estoque1::numeric(18,2) AS estoque,
-                   cadprodemp.cade_estoque6::numeric(18,2) AS estoqueemb
-            FROM cadprodemp
-            JOIN cadprod ON cadprodemp.cade_codigo = cadprod.cadp_codigo
-            FULL JOIN mvad ON cadprodemp.cade_codmva::text = mvad.mvad_codmva::text
-            WHERE cadprodemp.cade_ativo::text = 'S'::text 
-              AND cadprodemp.cade_codempresa::text = '{cod_empresa_banco}'
-            ORDER BY cadprodemp.cade_codempresa, cadprodemp.cade_codigo
+            SELECT cade_codempresa,
+                   cade_codigo,
+                   cadp_descricao,
+                   estoque
+            FROM "python_estoque"
+            WHERE cade_codempresa::text = '{cod_empresa_banco}'
+            ORDER BY cade_codempresa, cade_codigo
         """
 
         df_erp = conn_pg.query(query_erp, ttl=300)
