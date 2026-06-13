@@ -5,6 +5,11 @@ import streamlit.components.v1 as components
 from streamlit_gsheets import GSheetsConnection
 
 # ─────────────────────────────────────────────
+# IMPORTAÇÕES PARA ESTILIZAÇÃO DO EXCEL
+# ─────────────────────────────────────────────
+from openpyxl.styles import PatternFill, Font, Alignment, Border, Side
+
+# ─────────────────────────────────────────────
 # CONFIGURAÇÃO DA PÁGINA
 # ─────────────────────────────────────────────
 st.set_page_config(
@@ -419,6 +424,71 @@ produtos_iniciais = [
     {"Fornecedor": "TEMPEROS", "Código": 594758, "Descrição Oficial": "Cons Louro Folhas 200g Andorinha", "Nome Personalizado": ""}
 ]
 
+
+# ─────────────────────────────────────────────
+# FUNÇÃO DE ESTILIZAÇÃO DE EXCEL COM CORES (NOVA)
+# ─────────────────────────────────────────────
+def gerar_excel_estilizado(df, sheet_name="Resumo"):
+    buffer = io.BytesIO()
+    with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name=sheet_name)
+        worksheet = writer.sheets[sheet_name]
+
+        # Estilos com as cores do App (Marrom / Caramelo)
+        header_fill = PatternFill(start_color='8B5A2B', end_color='8B5A2B', fill_type='solid') # Marrom médio
+        alt_row_fill = PatternFill(start_color='FAF5F0', end_color='FAF5F0', fill_type='solid') # Bege bem claro para linhas alternadas
+        header_font = Font(color='FFFFFF', bold=True)
+        border_style = Border(
+            left=Side(style='thin', color='CCCCCC'),
+            right=Side(style='thin', color='CCCCCC'),
+            top=Side(style='thin', color='CCCCCC'),
+            bottom=Side(style='thin', color='CCCCCC')
+        )
+
+        for row_idx, row in enumerate(worksheet.iter_rows(min_row=1, max_row=worksheet.max_row, min_col=1, max_col=worksheet.max_column)):
+            for cell in row:
+                cell.border = border_style
+                if row_idx == 0:
+                    # Formata o Cabeçalho
+                    cell.fill = header_fill
+                    cell.font = header_font
+                    cell.alignment = Alignment(horizontal='center', vertical='center')
+                else:
+                    # Fundo alternado para as linhas
+                    if row_idx % 2 == 0:
+                        cell.fill = alt_row_fill
+                    
+                    # Alinhamento dinâmico: Centraliza números e deixa textos à esquerda
+                    if isinstance(cell.value, (int, float)):
+                        cell.alignment = Alignment(horizontal='center', vertical='center')
+                    else:
+                        cell.alignment = Alignment(horizontal='left', vertical='center')
+
+        # Autoajuste de largura das colunas
+        for col in worksheet.columns:
+            max_length = 0
+            col_letter = col[0].column_letter
+            for cell in col:
+                try:
+                    if len(str(cell.value)) > max_length:
+                        max_length = len(str(cell.value))
+                except:
+                    pass
+            worksheet.column_dimensions[col_letter].width = max_length + 2
+
+        # 🖨️ CONFIGURAÇÃO AUTOMÁTICA DE IMPRESSÃO
+        worksheet.sheet_properties.pageSetUpPr.fitToPage = True
+        worksheet.page_setup.fitToWidth = 1
+        worksheet.page_setup.fitToHeight = False
+        worksheet.page_setup.orientation = worksheet.ORIENTATION_LANDSCAPE
+        worksheet.page_margins.left = 0.25
+        worksheet.page_margins.right = 0.25
+        worksheet.page_margins.top = 0.75
+        worksheet.page_margins.bottom = 0.75
+
+    return buffer.getvalue()
+
+
 # ─────────────────────────────────────────────
 # CONEXÃO GOOGLE SHEETS & FUNÇÕES DE DADOS
 # ─────────────────────────────────────────────
@@ -740,11 +810,9 @@ if perfil_navegacao == "Separação e Fechamento":
             st.download_button("⬇️ CSV", data=csv, file_name="separacao_materia_prima.csv", mime="text/csv", use_container_width=True)
 
         with col_excel:
-            buffer = io.BytesIO()
-            with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
-                df_exp = df_editado.copy().rename(columns=MAPA_LOJAS)
-                df_exp.to_excel(writer, index=False, sheet_name='Pedidos Materia Prima')
-            st.download_button("⬇️ Excel", data=buffer.getvalue(), file_name="separacao_materia_prima.xlsx",
+            df_exp = df_editado.copy().rename(columns=MAPA_LOJAS)
+            excel_data = gerar_excel_estilizado(df_exp, "Separação Matéria Prima")
+            st.download_button("⬇️ Excel", data=excel_data, file_name="separacao_materia_prima.xlsx",
                                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                                use_container_width=True)
 
@@ -766,7 +834,7 @@ if perfil_navegacao == "Separação e Fechamento":
                 )
 
         with col_zerar:
-            if st.button("🚨 Zerar Todos os Pedidos", use_container_width=True):
+            if st.button("🚨 Zerar Todos os Pedidos", use_container_width=True, key="btn_zerar_sep_mat"):
                 modal_zerar_pedidos()
 
 # ─────────────────────────────────────────────
@@ -1031,7 +1099,34 @@ elif perfil_navegacao == "Visão por Fornecedor (Resumo)":
 </div>""", unsafe_allow_html=True)
 
     st.divider()
-    _, col_print = st.columns([8, 2])
+    
+    # ─────────────────────────────────────────────
+    # BOTÕES DE EXPORTAÇÃO, IMPRESSÃO E LIMPEZA
+    # ─────────────────────────────────────────────
+    col_csv, col_excel, col_space, col_print, col_zerar = st.columns([1.5, 1.5, 2.0, 2.5, 2.5])
+    
+    # Unifica as informações para que tanto CSV quanto Excel usem os mesmos dados
+    df_export = pd.DataFrame()
+    for forn in nomes_forn:
+        df_f = df_all[df_all["Fornecedor"] == forn].copy()
+        if not df_f.empty:
+            df_export = pd.concat([df_export, df_f], ignore_index=True)
+            
+    if not df_export.empty:
+        df_export = df_export[["Código", "Descrição", "Fornecedor"] + LOJAS]
+        df_export["TOTAL GERAL"] = df_export[LOJAS].sum(axis=1)
+        df_export = df_export.rename(columns=MAPA_LOJAS)
+
+    with col_csv:
+        if not df_export.empty:
+            csv_str = df_export.to_csv(index=False).encode('utf-8')
+            st.download_button("⬇️ Exportar CSV", data=csv_str, file_name="visao_categoria.csv", mime="text/csv", use_container_width=True)
+
+    with col_excel:
+        if not df_export.empty:
+            excel_data = gerar_excel_estilizado(df_export, "Visão Categorias")
+            st.download_button("⬇️ Exportar Excel", data=excel_data, file_name="visao_categoria.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", use_container_width=True)
+
     with col_print:
         if st.button("🖨️ Imprimir Resumo Geral", use_container_width=True):
             components.html(
@@ -1048,6 +1143,10 @@ elif perfil_navegacao == "Visão por Fornecedor (Resumo)":
                 "</script>",
                 height=0
             )
+
+    with col_zerar:
+        if st.button("🚨 Zerar Todos os Pedidos", use_container_width=True, key="btn_zerar_forn_mat"):
+            modal_zerar_pedidos()
 
 # ─────────────────────────────────────────────
 # ROTA 4 — CATÁLOGO DE PRODUTOS
